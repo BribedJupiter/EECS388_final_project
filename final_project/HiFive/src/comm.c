@@ -43,6 +43,7 @@ void auto_brake(int devid)
             gpio_write(RED_LED, OFF);
             delay(100); //off for 100ms
         }
+    }}
 
 int read_from_pi(int devid)
 {
