@@ -9,7 +9,7 @@ void auto_brake(int devid)
     // Task-1: 
     // Your code here (Use Lab 02 - Lab 04 for reference)
     // Use the directions given in the project document
-    int uart0 = devid //set devid 
+    int uart0 = devid; //set devid 
     uint16_t dist = 0; //set distance variable
     if ('Y' == ser_read(uart0) && 'Y' == ser_read(uart0)) { //check data readiness double byte
         char DistLow = ser_read(uart0); //read first byte
