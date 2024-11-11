@@ -91,12 +91,11 @@ while(1):
 		# prediction from the model. This is so that
 		# the HiFive can run the other functions in between
 		if count%4 == 0:
-			pass
-			#Your code here.
-
+			# create serial connection, convert to bytes, write to ser
+			ser = serial.Serial("/dev/ttyAMA1", 115200)
+			out = bytes(deg)
+			ser.write(out)
 		
-        
-        
 		pred_end   = time.time()
 
 		#Calculate the timings for each step
