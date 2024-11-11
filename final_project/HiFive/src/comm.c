@@ -9,15 +9,41 @@ void auto_brake(int devid)
     // Task-1: 
     // Your code here (Use Lab 02 - Lab 04 for reference)
     // Use the directions given in the project document
+    int uart0 = devid //set devid 
+    uint16_t dist = 0; //set distance variable
+    if ('Y' == ser_read(uart0) && 'Y' == ser_read(uart0)) { //check data readiness double byte
+        char DistLow = ser_read(uart0); //read first byte
+        char DistHigh = ser_read(uart0); //read second distance byte
+        
+        dist = (DistHigh << 8) + DistLow; //combine distance data
 
-    // > 200 cm = ON green, no braking
-    // 100 < d <= 200 cm, ON yellow, brake lightly
-    // 60 < d <= 100 cm, ON red, break hard
-    // d <= 60, ON flashing red, stop
+        //convert distance data to led output
+        if (dist > 200){ //safe distance = green
+            gpio_write(GREEN_LED, ON);
+            gpio_write(RED_LED, OFF);
+            gpio_write(BLUE_LED, OFF);
+            }
+        else if(dist > 100) //close = red and green
+        {
+            gpio_write(GREEN_LED, ON);
+            gpio_write(RED_LED, ON);
+            gpio_write(BLUE_LED, OFF);
+            }
+        else if (dist > 60){ //very close = red 
+            gpio_write(GREEN_LED, OFF);
+            gpio_write(RED_LED, ON);
+            gpio_write(BLUE_LED, OFF);
+        }
+        else{ //Too close = Blinking Red
+            gpio_write(GREEN_LED, OFF);
+            gpio_write(RED_LED, ON); //only red on 
+            gpio_write(BLUE_LED, OFF);
+            delay(100); //on for 100 ms 
 
-    // read from TFmini, parse, use dist value, display correct LED color
-    // lidar using UART0
-
+            gpio_write(RED_LED, OFF);
+            delay(100); //off for 100ms
+        }
+    }
 }
 
 int read_from_pi(int devid)
