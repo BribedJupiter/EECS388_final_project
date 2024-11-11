@@ -9,7 +9,7 @@ void auto_brake(int devid)
     // Task-1: 
     // Your code here (Use Lab 02 - Lab 04 for reference)
     // Use the directions given in the project document
-    int uart0 = devid //set devid 
+    int uart0 = devid; //set devid 
     uint16_t dist = 0; //set distance variable
     if ('Y' == ser_read(uart0) && 'Y' == ser_read(uart0)) { //check data readiness double byte
         char DistLow = ser_read(uart0); //read first byte
@@ -22,13 +22,12 @@ void auto_brake(int devid)
             gpio_write(GREEN_LED, ON);
             gpio_write(RED_LED, OFF);
             gpio_write(BLUE_LED, OFF);
-            }
-        else if(dist > 100) //close = red and green
-        {
+        }
+        else if(dist > 100){ //close = red and green
             gpio_write(GREEN_LED, ON);
             gpio_write(RED_LED, ON);
             gpio_write(BLUE_LED, OFF);
-            }
+        }
         else if (dist > 60){ //very close = red 
             gpio_write(GREEN_LED, OFF);
             gpio_write(RED_LED, ON);
@@ -43,7 +42,8 @@ void auto_brake(int devid)
             gpio_write(RED_LED, OFF);
             delay(100); //off for 100ms
         }
-    }}
+    }
+}
 
 int read_from_pi(int devid)
 {
