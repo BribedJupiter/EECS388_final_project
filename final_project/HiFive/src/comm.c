@@ -4,6 +4,8 @@
 
 #include "eecs388_lib.h"
 
+static int lastAngle;
+
 void auto_brake(int devid)
 {
     // Task-1: 
@@ -54,13 +56,13 @@ int read_from_pi(int devid)
 
     //uart0 = lidar
     //uart1 = pi
-    char data[5];
+    char buf[5];
     int angle;
-    static int lastAngle;
 
     if (ser_isready(devid)) {
-        ser_readline(devid, 5, data);
-        lastAngle = angle
+        ser_readline(devid, 5, buf);
+        sscanf(buf, "%d", &angle);
+        lastAngle = angle;
         return angle;
     }
     else{
@@ -76,7 +78,7 @@ void steering(int gpio, int pos)
 
     // Using PWM
     int usDegreeLength = (2400 - 544) / 180; // microseconds (us) to turn 1 degree: (max pulse length - min pulse length / 180
-    int usSignalLength = usDegreeLength * pos + 544; // length of time to go 1 degree * # of degrees to turn + min pulse length
+    int usSignalLength = usDegreeLength * (pos+90) + 544; // length of time to go 1 degree * # of degrees to turn + min pulse length
     int leftoverPeriod = 20000 - usSignalLength; // leftover time for 1 period
 
     gpio_write(gpio, ON);
@@ -107,10 +109,9 @@ int main()
     printf("Begin the main loop.\n");
 
     while (1) {
-
-        auto_brake(lidar_to_hifive); // measuring distance using lidar and braking
+        //auto_brake(lidar_to_hifive); // measuring distance using lidar and braking
         int angle = read_from_pi(pi_to_hifive); //getting turn direction from pi
-        printf("\nangle=%i", angle) 
+        printf("\nangle= %i", angle) 
         int gpio = PIN_19; 
         for (int i = 0; i < 10; i++){
             // Here, we set the angle to 180 if the prediction from the DNN is a positive angle
@@ -119,16 +120,16 @@ int main()
             // You are welcome to pass the angle values directly to the steering function.
             // If the servo function is written correctly, it should still work,
             // only the movements of the servo will be more subtle
-            if(angle>0){
-                steering(gpio, 180);
-            }
-            else {
-                steering(gpio,0);
-            }
+            // if(angle>0){
+            //     steering(gpio, 180);
+            // }
+            // else {
+            //     steering(gpio,0);
+            // }
             
             // Uncomment the line below to see the actual angles on the servo.
             // Remember to comment out the if-else statement above!
-            // steering(gpio, angle);
+            steering(gpio, angle);
         }
 
     }
