@@ -54,12 +54,17 @@ int read_from_pi(int devid)
 
     //uart0 = lidar
     //uart1 = pi
+    char data[5];
+    int angle;
+    static int lastAngle;
+
     if (ser_isready(devid)) {
-        char str[32];
-        ser_readline(devid, strlen(str), str);
-        int result;
-        sscanf(str, "%i", &result);
-        return result;
+        ser_readline(devid, 5, data);
+        lastAngle = angle
+        return angle;
+    }
+    else{
+        return lastAngle;
     }
 }
 
