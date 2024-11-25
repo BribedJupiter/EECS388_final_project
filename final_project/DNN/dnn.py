@@ -84,8 +84,6 @@ while(1):
 		rad = model.y.eval(feed_dict={model.x: [img]})[0][0]
 		deg = rad2deg(rad)
         
-        
-        
 		# Your code goes here in this if statement
 		# The if condition is used to send every 4th
 		# prediction from the model. This is so that
@@ -93,10 +91,9 @@ while(1):
 		if (count % 4 == 0):
 			# create serial connection, convert to bytes, write to ser
 			ser = serial.Serial("/dev/ttyAMA1", 115200)
-			out = bytes(deg)
-			ser.write(out)
+			ser.write(bytes(str(int(deg)) + "\n")) 
 		
-		pred_end   = time.time()
+		pred_end  = time.time()
 
 		#Calculate the timings for each step
 		cam_time  = (prep_start - cam_start)*1000
