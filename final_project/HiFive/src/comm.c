@@ -60,7 +60,7 @@ int read_from_pi(int devid)
 
     if (ser_isready(devid)) {
         ser_readline(devid, 5, data);
-        lastAngle = angle
+        lastAngle = angle;
         return angle;
     }
     else{
