@@ -4,7 +4,7 @@
 
 #include "eecs388_lib.h"
 
-static int lastAngle;
+static int angle;
 
 void auto_brake(int devid)
 {
@@ -57,17 +57,12 @@ int read_from_pi(int devid)
     //uart0 = lidar
     //uart1 = pi
     char buf[5];
-    int angle;
 
     if (ser_isready(devid)) {
         ser_readline(devid, 5, buf);
         sscanf(buf, "%d", &angle);
-        lastAngle = angle;
-        return angle;
     }
-    else{
-        return lastAngle;
-    }
+    return angle;
 }
 
 void steering(int gpio, int pos)
