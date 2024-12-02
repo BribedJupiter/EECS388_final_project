@@ -5,6 +5,8 @@
 #include "eecs388_lib.h"
 
 static int angle;
+static int prev_dist;
+static int blink_on = 0;
 
 void auto_brake(int devid)
 {
@@ -18,33 +20,45 @@ void auto_brake(int devid)
         char DistHigh = ser_read(uart0); //read second distance byte
         
         dist = (DistHigh << 8) + DistLow; //combine distance data
-
+        prev_dist = dist;
+        printf("\ndistance: %d", dist);
         //convert distance data to led output
-        if (dist > 200){ //safe distance = green
-            gpio_write(GREEN_LED, ON);
-            gpio_write(RED_LED, OFF);
-            gpio_write(BLUE_LED, OFF);
-            }
-        else if(dist > 100) //close = red and green
-        {
-            gpio_write(GREEN_LED, ON);
-            gpio_write(RED_LED, ON);
-            gpio_write(BLUE_LED, OFF);
-            }
-        else if (dist > 60){ //very close = red 
-            gpio_write(GREEN_LED, OFF);
-            gpio_write(RED_LED, ON);
-            gpio_write(BLUE_LED, OFF);
+    } else {
+        dist = prev_dist;
+    }
+    if (dist > 200){ //safe distance = green
+        gpio_write(GREEN_LED, ON);
+        gpio_write(RED_LED, OFF);
+        gpio_write(BLUE_LED, OFF);
         }
-        else{ //Too close = Blinking Red
+    else if(dist > 100) //close = red and green
+    {
+        gpio_write(GREEN_LED, ON);
+        gpio_write(RED_LED, ON);
+        gpio_write(BLUE_LED, OFF);
+        }
+    else if (dist > 60){ //very close = red 
+        gpio_write(GREEN_LED, OFF);
+        gpio_write(RED_LED, ON);
+        gpio_write(BLUE_LED, OFF);
+    }
+    else if (dist > 30) { //Too close = Blinking Red
+        if (blink_on == 0) {
             gpio_write(GREEN_LED, OFF);
             gpio_write(RED_LED, ON); //only red on 
             gpio_write(BLUE_LED, OFF);
-            delay(100); //on for 100 ms 
-
-            gpio_write(RED_LED, OFF);
-            delay(100); //off for 100ms
+            blink_on = 1;
+        } else {
+            gpio_write(GREEN_LED, OFF);
+            gpio_write(RED_LED, OFF); //all off
+            gpio_write(BLUE_LED, OFF);
+            blink_on = 0;
         }
+    }
+    else { // outside of workable range
+        gpio_write(GREEN_LED, OFF);
+        gpio_write(BLUE_LED, OFF); 
+        gpio_write(RED_LED, OFF);
     }
 }
 
@@ -104,7 +118,7 @@ int main()
     printf("Begin the main loop.\n");
 
     while (1) {
-        //auto_brake(lidar_to_hifive); // measuring distance using lidar and braking
+        auto_brake(lidar_to_hifive); // measuring distance using lidar and braking
         int angle = read_from_pi(pi_to_hifive); //getting turn direction from pi
         printf("\nangle= %i", angle) 
         int gpio = PIN_19; 
